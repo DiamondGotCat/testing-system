@@ -1,0 +1,51 @@
+name: AutoTestingSystem
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0,6,12,18 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  test-macos-13:
+    uses: ./.github/workflows/os-test.yml
+    with:
+      runner: macos-13
+      python-version: '3.12'
+
+  test-ubuntu-22-04:
+    needs: test-macos-13
+    uses: ./.github/workflows/os-test.yml
+    with:
+      runner: ubuntu-22.04
+      python-version: '3.12'
+
+  test-windows-2022:
+    needs: test-ubuntu-22-04
+    uses: ./.github/workflows/os-test.yml
+    with:
+      runner: windows-2022
+      python-version: '3.12'
+
+  test-macos-14:
+    needs: test-windows-2022
+    uses: ./.github/workflows/os-test.yml
+    with:
+      runner: macos-14
+      python-version: '3.12'
+
+  test-ubuntu-22-04-arm:
+    needs: test-macos-14
+    uses: ./.github/workflows/os-test.yml
+    with:
+      runner: ubuntu-22.04-arm
+      python-version: '3.12'
+
+  test-windows-11-arm:
+    needs: test-ubuntu-22-04-arm
+    uses: ./.github/workflows/os-test.yml
+    with:
+      runner: windows-11-arm
+      python-version: '3.12'

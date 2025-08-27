@@ -1,0 +1,9 @@
+# System's Temporary Files
+tmp
+tmp/*
+tmp/**
+
+# UV Venv (Local Develop)
+.venv
+.venv/*
+.venv/**

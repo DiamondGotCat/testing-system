@@ -1,0 +1,73 @@
+name: OS Test (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: true
+        type: string
+      python-version:
+        required: false
+        default: '3.12'
+        type: string
+
+jobs:
+  test:
+    runs-on: ${{ inputs.runner }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git user
+        shell: bash
+        run: |
+          git config user.name "AutoTestingSystem"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Testing
+        shell: bash
+        run: |
+          mkdir -p results/${{ inputs.runner }}
+          python main.py --output results/${{ inputs.runner }}/result.json || python main.py
+
+      - name: Pull latest (rebase) before committing
+        shell: bash
+        run: |
+          branch="${{ github.ref_name }}"
+          git fetch origin "$branch"
+          git rebase "origin/$branch" || (echo "Rebase failed"; git rebase --abort; exit 1)
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git add -A
+          git commit -m "Upload Test Result (${{ inputs.runner }})" || echo "No changes to commit"
+
+      - name: Push changes (with retry)
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          branch="${{ github.ref_name }}"
+          for i in 1 2 3; do
+            git push origin "HEAD:$branch" && exit 0
+            echo "Push failed (attempt $i). Pull&rebase and retry..."
+            git fetch origin "$branch"
+            git rebase "origin/$branch" || (git rebase --abort; exit 1)
+            sleep 2
+          done
+          echo "Push failed after retries." && exit 1
