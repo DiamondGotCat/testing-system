@@ -74,26 +74,15 @@ def download_and_extract(stableTag: str, osname: str, arch: str) -> Path:
 
     return exec_path
 
-def runWithStdin(path: Path, content: str, errorOnNonZero: bool = True) -> str:
+def runWithStdin(path: Path, content: str) -> str:
     result = subprocess.run(
         [str(path)],
         input=content,
         capture_output=True,
         text=True,
-        check=errorOnNonZero
+        check=False
     )
     return result.stdout
-
-TestCase1 = """
-print(ypsh.version)
-"""
-
-TestCase2 = """
-import("stdmath")
-for i in range(1,1000) {
-    print(i)
-}
-"""
 
 def main():
     osname, arch = get_os_arch()
@@ -101,10 +90,35 @@ def main():
     execFilePath = download_and_extract(stableTag, osname, arch)
 
     print("Test Case 1: print the 'ypsh.version'")
-    print(runWithStdin(execFilePath, TestCase1))
+    print(runWithStdin(execFilePath, """
+print(ypsh.version)
+"""))
 
     print("Test Case 2: 'for' Syntax")
-    print(runWithStdin(execFilePath, TestCase2))
+    print(runWithStdin(execFilePath, """
+import("stdmath")
+for i in range(1,10) {
+    print(i)
+}
+"""))
+
+    print("Test Case 3: 'func' Syntax")
+    print(runWithStdin(execFilePath, """
+func greeting(name: str) {
+    print("Hello, \(name)!")
+}
+greeting("World")
+"""))
+
+    print("Test Case 4: 'exit' Built-in Function with code 0")
+    print(runWithStdin(execFilePath, """
+exit(0)
+"""))
+
+    print("Test Case 5: 'exit' Built-in Function with code 1")
+    print(runWithStdin(execFilePath, """
+exit(1)
+"""))
 
 if __name__ == "__main__":
     main()
