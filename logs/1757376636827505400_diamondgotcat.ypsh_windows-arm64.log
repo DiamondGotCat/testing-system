@@ -1,0 +1,45 @@
+==== TEST RUN LOG ====
+Test Name      : diamondgotcat.ypsh
+Test File      : C:\a\testing-system\testing-system\tests\diamondgotcat.ypsh.py
+Command        : C:\hostedtoolcache\windows\Python\3.12.10\arm64\python.exe C:\a\testing-system\testing-system\tests\diamondgotcat.ypsh.py
+Start (UTC)    : 2025-09-09T00:10:36.859197+00:00
+Epoch (ns)     : 1757376636827505400
+---- ENVIRONMENT ----
+python_executable: C:\hostedtoolcache\windows\Python\3.12.10\arm64\python.exe
+python_version   : 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:31:18) [MSC v.1943 64 bit (ARM64)]
+platform         : Windows-11-10.0.26100-SP0
+cwd              : C:\a\testing-system\testing-system
+tests_dir        : C:\a\testing-system\testing-system\tests
+os               : windows
+arch             : arm64
+----------------------
+---- STDOUT ----
+Test Case 1: print the 'ypsh.version'
+YPSH v6.12 (01K4M6WWB7A5P8E7X7GDWBTMCG)
+
+Test Case 2: 'for' Syntax
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+
+Test Case 3: 'func' Syntax
+Hello, World!
+
+Test Case 4: 'exit' Built-in Function with code 0
+
+Test Case 5: 'exit' Built-in Function with code 1
+---- STDERR ----
+C:\a\testing-system\testing-system\tests\diamondgotcat.ypsh.py:108: SyntaxWarning: invalid escape sequence '\('
+  print("Hello, \(name)!")
+-----------------
+End   (UTC)    : 2025-09-09T00:10:45.979230+00:00
+Duration (s)   : 9.120033
+Return Code    : 0
+======================
